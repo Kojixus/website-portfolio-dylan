@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 230" role="img" aria-label="Sebring track reference">
+  <defs>
+    <linearGradient id="trackTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#dfe4ea" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(2 2)">
+    <path
+      d="M20 170L32 204L272 204L318 156L302 130L282 122L272 92L268 62L246 42L198 36L182 20L106 20L80 34L62 58L36 72L28 104L38 126L58 136L66 152Z M52 162L60 178L254 178L286 144L272 122L252 116L244 90L238 72L222 60L184 58L164 48L118 50L98 64L90 82L66 98L60 118L74 130L88 140Z"
+      fill="#bcc4cd"
+      fill-rule="evenodd"
+      transform="translate(0 11)"
+      opacity="0.85"
+    />
+    <path
+      d="M20 170L32 204L272 204L318 156L302 130L282 122L272 92L268 62L246 42L198 36L182 20L106 20L80 34L62 58L36 72L28 104L38 126L58 136L66 152Z M52 162L60 178L254 178L286 144L272 122L252 116L244 90L238 72L222 60L184 58L164 48L118 50L98 64L90 82L66 98L60 118L74 130L88 140Z"
+      fill="url(#trackTop)"
+      fill-rule="evenodd"
+      stroke="#ff2f2f"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+  </g>
+</svg>
