@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #080a0f;
-  --foreground: #f4f6f9;
-  --panel: #11161f;
+  --background: #060a12;
+  --foreground: #f4f7fb;
+  --panel: #0f1824;
   --line: rgba(255, 255, 255, 0.14);
-  --accent: #3ea6ff;
-  --accent-soft: #9fd8ff;
-  --accent-gold: #d8b46b;
-  --accent-gold-soft: #f0d9a5;
+  --accent: #5abaff;
+  --accent-soft: #b7e3ff;
+  --accent-gold: #dfb968;
+  --accent-gold-soft: #f3deb0;
   --font-display: "Franklin Gothic Demi Cond", "Arial Narrow Bold", "Impact",
     sans-serif;
   --font-sans: "Trebuchet MS", "Segoe UI", "Tahoma", sans-serif;
@@ -28,10 +28,11 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6.5rem;
 }
 
 section[id] {
-  scroll-margin-top: 6rem;
+  scroll-margin-top: 6.8rem;
 }
 
 body {
@@ -40,10 +41,10 @@ body {
   position: relative;
   overflow-x: clip;
   background:
-    radial-gradient(circle at 78% -2%, rgba(216, 180, 107, 0.14) 0, transparent 34%),
-    radial-gradient(circle at 12% 18%, rgba(62, 166, 255, 0.27) 0, transparent 46%),
-    radial-gradient(circle at 84% 12%, rgba(51, 106, 179, 0.35) 0, transparent 39%),
-    linear-gradient(160deg, #070a11 0%, #0e131c 48%, #080b12 100%);
+    radial-gradient(circle at 82% -6%, rgba(223, 185, 104, 0.18) 0, transparent 34%),
+    radial-gradient(circle at 10% 20%, rgba(90, 186, 255, 0.34) 0, transparent 48%),
+    radial-gradient(circle at 84% 15%, rgba(56, 113, 191, 0.36) 0, transparent 41%),
+    linear-gradient(155deg, #050912 0%, #0b1220 44%, #07101b 100%);
   color: var(--foreground);
   font-family: var(--font-sans);
 }
@@ -61,13 +62,13 @@ body::before {
   background:
     conic-gradient(
       from 210deg at 50% 50%,
-      rgba(34, 91, 155, 0.08),
-      rgba(62, 166, 255, 0.2),
-      rgba(240, 217, 165, 0.14),
-      rgba(34, 91, 155, 0.08)
+      rgba(34, 91, 155, 0.12),
+      rgba(90, 186, 255, 0.2),
+      rgba(243, 222, 176, 0.14),
+      rgba(34, 91, 155, 0.12)
     );
-  filter: blur(82px);
-  animation: backdrop-drift 26s linear infinite;
+  filter: blur(90px);
+  animation: backdrop-drift 30s linear infinite;
 }
 
 body::after {
@@ -92,16 +93,68 @@ body::after {
   color: var(--accent-gold-soft);
 }
 
+.gold-outline {
+  border-color: rgba(240, 217, 165, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(240, 217, 165, 0.35),
+    0 18px 42px rgba(2, 7, 14, 0.55);
+}
+
+
 .race-surface,
 .ontrack-surface {
   isolation: isolate;
   background:
-    radial-gradient(circle at 92% 8%, rgba(216, 180, 107, 0.11) 0, transparent 36%),
-    radial-gradient(circle at 70% 10%, rgba(72, 163, 255, 0.16) 0, transparent 46%),
-    radial-gradient(circle at 14% 24%, rgba(58, 173, 255, 0.14) 0, transparent 38%);
+    radial-gradient(circle at 91% 8%, rgba(223, 185, 104, 0.14) 0, transparent 36%),
+    radial-gradient(circle at 70% 10%, rgba(90, 186, 255, 0.2) 0, transparent 46%),
+    radial-gradient(circle at 14% 24%, rgba(58, 173, 255, 0.16) 0, transparent 38%);
 }
 
-.race-surface::before,
+.race-surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(5, 8, 14, 0.78) 0%, rgba(5, 8, 14, 0.82) 100%),
+    repeating-linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.03) 0 1px,
+      transparent 1px 74px
+    );
+}
+
+.race-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  background:
+    radial-gradient(
+      closest-side at 18% 68%,
+      transparent 58%,
+      rgba(90, 186, 255, 0.14) 59%,
+      transparent 63%
+    ),
+    radial-gradient(
+      closest-side at 78% 28%,
+      transparent 56%,
+      rgba(223, 185, 104, 0.14) 57%,
+      transparent 61%
+    ),
+    linear-gradient(
+      110deg,
+      rgba(255, 255, 255, 0.035) 0 1px,
+      transparent 1px 120px
+    );
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: auto, auto, 120px 120px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 82%);
+}
+
 .ontrack-surface::before {
   content: "";
   position: absolute;
@@ -119,9 +172,9 @@ body::after {
 
 .ontrack-surface {
   background:
-    radial-gradient(circle at 90% 8%, rgba(216, 180, 107, 0.12) 0, transparent 34%),
-    radial-gradient(circle at 72% 6%, rgba(61, 133, 219, 0.24) 0, transparent 44%),
-    radial-gradient(circle at 14% 24%, rgba(58, 173, 255, 0.16) 0, transparent 40%);
+    radial-gradient(circle at 90% 8%, rgba(223, 185, 104, 0.16) 0, transparent 34%),
+    radial-gradient(circle at 72% 6%, rgba(61, 133, 219, 0.28) 0, transparent 44%),
+    radial-gradient(circle at 14% 24%, rgba(58, 173, 255, 0.2) 0, transparent 40%);
 }
 
 .racecar-stage {
@@ -251,8 +304,9 @@ body::after {
 
 .track3d-stage {
   background:
-    radial-gradient(circle at 52% -26%, rgba(112, 195, 255, 0.28), transparent 62%),
-    linear-gradient(180deg, #061121 0%, #040b15 64%, #03070f 100%);
+    radial-gradient(circle at 50% -25%, rgba(96, 186, 255, 0.24), transparent 52%),
+    radial-gradient(circle at 82% 82%, rgba(223, 185, 104, 0.14), transparent 48%),
+    linear-gradient(180deg, rgba(9, 15, 26, 0.98) 0%, rgba(6, 10, 18, 0.98) 100%);
 }
 
 .track3d-canvas {
@@ -260,84 +314,55 @@ body::after {
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: 10;
 }
 
-.track3d-grid {
-  background-image:
-    linear-gradient(to right, rgba(112, 194, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(112, 194, 255, 0.07) 1px, transparent 1px);
-  background-size: 2.3rem 2.3rem;
-  mask-image: radial-gradient(circle at 50% 40%, #000 58%, transparent 100%);
-}
-
-.track3d-halo {
-  background:
-    radial-gradient(circle, rgba(62, 166, 255, 0.22) 0%, rgba(6, 18, 31, 0.14) 46%, transparent 68%);
-  filter: blur(24px);
-}
-
-.sponsor-marquee-shell {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(10, 18, 30, 0.94), rgba(6, 13, 24, 0.95));
-}
-
-.sponsor-marquee-shell::before,
-.sponsor-marquee-shell::after {
-  content: "";
+.track3d-fallback {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 3.2rem;
-  pointer-events: none;
+  inset: 0;
   z-index: 2;
+  pointer-events: none;
 }
 
-.sponsor-marquee-shell::before {
-  left: 0;
-  background: linear-gradient(90deg, rgba(7, 13, 23, 0.96), transparent);
-}
-
-.sponsor-marquee-shell::after {
-  right: 0;
-  background: linear-gradient(270deg, rgba(7, 13, 23, 0.96), transparent);
-}
-
-.sponsor-marquee-track {
-  width: max-content;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.62rem 0.55rem;
-  animation: sponsor-scroll 30s linear infinite;
-}
-
-.sponsor-marquee-track-reverse {
-  animation-direction: reverse;
-  animation-duration: 34s;
-}
-
-.sponsor-logo-card {
-  flex-shrink: 0;
-  width: 156px;
-  height: 56px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+.track3d-fade {
   background:
-    linear-gradient(150deg, rgba(76, 168, 245, 0.2) 0%, rgba(13, 21, 34, 0.96) 52%, rgba(236, 204, 137, 0.16) 100%);
-  padding: 0.35rem;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  display: grid;
-  place-items: center;
+    radial-gradient(circle at 50% 22%, rgba(139, 196, 255, 0.14), transparent 54%),
+    radial-gradient(circle at 18% 88%, rgba(223, 185, 104, 0.11), transparent 44%),
+    linear-gradient(180deg, rgba(3, 7, 13, 0) 0%, rgba(3, 7, 13, 0.34) 100%);
 }
 
-.sponsor-logo-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
+.telemetry-hud {
+  backdrop-filter: blur(2px);
+}
+
+.telemetry-pill {
+  border-radius: 0.7rem;
+  border: 1px solid rgba(171, 220, 255, 0.28);
+  background: linear-gradient(
+    130deg,
+    rgba(8, 21, 36, 0.86),
+    rgba(8, 18, 30, 0.72)
+  );
+  padding: 0.36rem 0.48rem;
+  box-shadow: inset 0 0 0 1px rgba(243, 222, 176, 0.12);
+}
+
+.telemetry-pill p:first-child {
+  margin: 0;
+  font-size: 0.54rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: rgba(191, 230, 255, 0.84);
+}
+
+.telemetry-pill p:last-child {
+  margin: 0.14rem 0 0;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(240, 247, 255, 0.95);
 }
 
 .route-loader {
@@ -462,6 +487,52 @@ body::after {
   transform: scaleX(1);
 }
 
+.nav-links {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.cta-primary,
+.cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.cta-primary {
+  border: 1px solid rgba(240, 217, 165, 0.75);
+  background: linear-gradient(135deg, rgba(105, 188, 255, 0.94), rgba(76, 167, 245, 0.9));
+  color: #051321;
+}
+
+.cta-primary:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(123, 198, 255, 0.96), rgba(90, 176, 248, 0.92));
+}
+
+.cta-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  color: rgba(230, 241, 255, 0.95);
+  background: rgba(8, 14, 24, 0.62);
+}
+
+.cta-secondary:hover {
+  transform: translateY(-1px);
+  border-color: rgba(159, 216, 255, 0.7);
+  background: rgba(14, 24, 40, 0.72);
+}
+
 .race-surface {
   isolation: isolate;
 }
@@ -483,7 +554,7 @@ body::after {
 .reveal {
   opacity: 0;
   transform: translateY(18px) scale(0.985);
-  animation: reveal-up 620ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation: reveal-up 680ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
 }
 
 @keyframes reveal-up {
@@ -504,6 +575,15 @@ body::after {
   }
   50% {
     transform: translateY(-2px);
+  }
+}
+
+@keyframes track-grid-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 22px, 0);
   }
 }
 
@@ -617,15 +697,6 @@ body::after {
   }
 }
 
-@keyframes sponsor-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @media (max-width: 640px) {
   .nav-shell {
     border-radius: 1rem;
@@ -636,21 +707,19 @@ body::after {
     gap: 0.35rem;
   }
 
-  .sponsor-marquee-track {
-    gap: 0.46rem;
-    padding: 0.46rem 0.4rem;
-    animation-duration: 24s;
+  .cta-primary,
+  .cta-secondary {
+    padding: 0.55rem 0.95rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
   }
 
-  .sponsor-marquee-track-reverse {
-    animation-duration: 27s;
+  .telemetry-pill p:first-child {
+    font-size: 0.5rem;
   }
 
-  .sponsor-logo-card {
-    width: 132px;
-    height: 46px;
-    border-radius: 11px;
-    padding: 0.25rem;
+  .telemetry-pill p:last-child {
+    font-size: 0.82rem;
   }
 }
 
@@ -681,10 +750,10 @@ body::after {
   .wheel-spin,
   .racecar-road::before,
   .racecar-glow,
+  .track-grid,
   .telemetry-scan,
   .telemetry-track-dash,
   .telemetry-bars span,
-  .sponsor-marquee-track,
   body::before,
   .route-loader-panel,
   .route-loader-bars span {
