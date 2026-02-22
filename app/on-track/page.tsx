@@ -61,17 +61,11 @@ const weekendNotes = [
 
 export default function OnTrackPage() {
   return (
-    <main className="ontrack-surface relative min-h-screen overflow-x-clip px-4 py-6 text-zinc-100 sm:px-8 sm:py-8 lg:px-12">
-      <div className="track-grid pointer-events-none absolute inset-0 opacity-30" />
-      <div
-        className="pointer-events-none absolute -top-36 left-2/3 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-sky-500/25 blur-3xl"
-      />
-      <div
-        className="pointer-events-none absolute top-20 right-[12%] h-72 w-72 rounded-full bg-amber-300/16 blur-3xl"
-      />
-      <div
-        className="pointer-events-none absolute bottom-[18%] left-[8%] h-60 w-60 rounded-full bg-amber-200/10 blur-3xl"
-      />
+    <main className="race-surface relative min-h-screen overflow-x-clip px-4 py-6 text-zinc-100 sm:px-8 sm:py-8 lg:px-12">
+      <div className="track-grid pointer-events-none absolute inset-0 opacity-40" />
+      <div className="pointer-events-none absolute -top-28 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-500/30 blur-3xl" />
+      <div className="pointer-events-none absolute top-14 right-[10%] h-72 w-72 rounded-full bg-amber-300/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[24%] left-[7%] h-64 w-64 rounded-full bg-amber-200/10 blur-3xl" />
 
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 pb-8 md:gap-10 md:pb-10">
         <header className="nav-shell reveal sticky top-2 z-40 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/15 bg-black/45 px-3 py-2 backdrop-blur-md sm:top-3 sm:gap-3 sm:rounded-3xl sm:px-5 sm:py-3">
