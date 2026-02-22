@@ -1,7 +1,7 @@
 export default function RaceCarPanel() {
   return (
-    <div className="w-full rounded-[1.35rem] border border-sky-200/20 bg-gradient-to-b from-[#07111f] to-[#070d18] p-2 shadow-2xl">
-      <div className="racecar-stage relative h-[340px] overflow-hidden rounded-[1.05rem] sm:h-[520px]">
+    <div className="w-full rounded-[1.35rem] border border-sky-200/20 bg-linear-to-b from-[#07111f] to-[#070d18] p-2 shadow-2xl">
+      <div className="racecar-stage relative h-85 overflow-hidden rounded-[1.05rem] sm:h-130">
         <div className="racecar-grid pointer-events-none absolute inset-0 opacity-35" />
         <div className="racecar-road pointer-events-none absolute inset-x-0 bottom-0 h-[44%]" />
         <div className="racecar-glow pointer-events-none absolute inset-x-16 bottom-[28%] h-14 rounded-full bg-sky-400/25 blur-2xl" />
@@ -10,7 +10,7 @@ export default function RaceCarPanel() {
           viewBox="0 0 920 360"
           role="img"
           aria-label="Stylized race car graphic"
-          className="racecar-svg absolute inset-x-0 bottom-[10%] mx-auto w-[95%] max-w-[900px]"
+          className="racecar-svg absolute inset-x-0 bottom-[10%] mx-auto w-[95%] max-w-225"
         >
           <defs>
             <linearGradient id="carBody" x1="0" x2="1">
@@ -40,8 +40,22 @@ export default function RaceCarPanel() {
               strokeLinecap="round"
               strokeOpacity="0.9"
             />
-            <rect x="152" y="216" width="84" height="14" rx="4" fill="#113b60" />
-            <rect x="660" y="216" width="90" height="14" rx="4" fill="#113b60" />
+            <rect
+              x="152"
+              y="216"
+              width="84"
+              height="14"
+              rx="4"
+              fill="#113b60"
+            />
+            <rect
+              x="660"
+              y="216"
+              width="90"
+              height="14"
+              rx="4"
+              fill="#113b60"
+            />
             <path
               d="M258 232H744"
               stroke="#c7e8ff"

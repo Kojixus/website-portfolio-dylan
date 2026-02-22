@@ -49,7 +49,7 @@ function getNthWeekdayOfMonth(
   year: number,
   monthIndex: number,
   weekday: number,
-  nth: number
+  nth: number,
 ) {
   const firstDay = new Date(year, monthIndex, 1);
   const offset = (weekday - firstDay.getDay() + 7) % 7;
@@ -57,7 +57,11 @@ function getNthWeekdayOfMonth(
   return new Date(year, monthIndex, day);
 }
 
-function getLastWeekdayOfMonth(year: number, monthIndex: number, weekday: number) {
+function getLastWeekdayOfMonth(
+  year: number,
+  monthIndex: number,
+  weekday: number,
+) {
   const lastDay = new Date(year, monthIndex + 1, 0);
   const offset = (lastDay.getDay() - weekday + 7) % 7;
   return new Date(year, monthIndex, lastDay.getDate() - offset);
@@ -84,7 +88,9 @@ function getFederalHolidays(year: number): Holiday[] {
   const holidays: Holiday[] = [];
 
   const addFixed = (name: string, monthIndex: number, day: number) => {
-    const { date, observed } = applyObservedDate(new Date(year, monthIndex, day));
+    const { date, observed } = applyObservedDate(
+      new Date(year, monthIndex, day),
+    );
     if (date.getFullYear() === year) {
       holidays.push({ name, date: toDateKey(date), observed });
     }
@@ -97,7 +103,7 @@ function getFederalHolidays(year: number): Holiday[] {
   addFixed("New Year's Day", 0, 1);
   addFloating(
     "Birthday of Martin Luther King, Jr.",
-    getNthWeekdayOfMonth(year, 0, 1, 3)
+    getNthWeekdayOfMonth(year, 0, 1, 3),
   );
   addFloating("Washington's Birthday", getNthWeekdayOfMonth(year, 1, 1, 3));
   addFloating("Memorial Day", getLastWeekdayOfMonth(year, 4, 1));
@@ -115,7 +121,7 @@ function getFederalHolidays(year: number): Holiday[] {
 function buildYearMonths(year: number, events: RaceEvent[]) {
   const eventsByDate = new Map(events.map((event) => [event.date, event]));
   const holidaysByDate = new Map(
-    getFederalHolidays(year).map((holiday) => [holiday.date, holiday])
+    getFederalHolidays(year).map((holiday) => [holiday.date, holiday]),
   );
 
   return Array.from({ length: 12 }, (_, monthIndex) => {
@@ -133,7 +139,7 @@ function buildYearMonths(year: number, events: RaceEvent[]) {
 
     for (let day = 1; day <= daysInMonth; day += 1) {
       const dateKey = `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(
-        day
+        day,
       ).padStart(2, "0")}`;
       cells.push({
         day,
@@ -159,7 +165,7 @@ function getInitialMonthIndex(year: number, events: RaceEvent[]) {
   const todayMidnight = new Date(
     today.getFullYear(),
     today.getMonth(),
-    today.getDate()
+    today.getDate(),
   );
 
   const sameYearEvents = events
@@ -188,32 +194,35 @@ export default function RaceCalendar({
   statusClasses,
 }: RaceCalendarProps) {
   const calendarYear =
-    year ??
-    (Number(events[0]?.date.slice(0, 4)) || new Date().getFullYear());
+    year ?? (Number(events[0]?.date.slice(0, 4)) || new Date().getFullYear());
   const months = useMemo(
     () => buildYearMonths(calendarYear, events),
-    [calendarYear, events]
+    [calendarYear, events],
   );
   const initialMonthIndex = useMemo(
     () => getInitialMonthIndex(calendarYear, events),
-    [calendarYear, events]
+    [calendarYear, events],
   );
   const [monthIndex, setMonthIndex] = useState(initialMonthIndex);
 
   const goPrev = () => {
-    setMonthIndex((current) => (current === 0 ? months.length - 1 : current - 1));
+    setMonthIndex((current) =>
+      current === 0 ? months.length - 1 : current - 1,
+    );
   };
   const goNext = () => {
-    setMonthIndex((current) => (current === months.length - 1 ? 0 : current + 1));
+    setMonthIndex((current) =>
+      current === months.length - 1 ? 0 : current + 1,
+    );
   };
 
   const month = months[monthIndex];
   const monthShortLabels = useMemo(
     () =>
       Array.from({ length: 12 }, (_, index) =>
-        monthShortFormatter.format(new Date(calendarYear, index, 1))
+        monthShortFormatter.format(new Date(calendarYear, index, 1)),
       ),
-    [calendarYear]
+    [calendarYear],
   );
   const monthEvents = useMemo(
     () =>
@@ -226,7 +235,7 @@ export default function RaceCalendar({
           );
         })
         .sort((a, b) => a.date.localeCompare(b.date)),
-    [calendarYear, events, monthIndex]
+    [calendarYear, events, monthIndex],
   );
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -235,7 +244,7 @@ export default function RaceCalendar({
   }, [monthEvents]);
 
   const selectedEvent = selectedDate
-    ? monthEvents.find((event) => event.date === selectedDate) ?? null
+    ? (monthEvents.find((event) => event.date === selectedDate) ?? null)
     : null;
 
   return (
@@ -299,12 +308,12 @@ export default function RaceCalendar({
             cell.day ? (
               <div
                 key={`${month.key}-${cellIndex}`}
-                className={`flex min-h-[5.25rem] flex-col rounded-lg border p-2 sm:min-h-[6.5rem] sm:p-2.5 lg:min-h-[7.25rem] ${
+                className={`flex min-h-21 flex-col rounded-lg border p-2 sm:min-h-26 sm:p-2.5 lg:min-h-29 ${
                   cell.event
-                    ? "border-sky-200/30 bg-gradient-to-b from-sky-400/14 via-zinc-900/85 to-zinc-900/90"
+                    ? "border-sky-200/30 bg-linear-to-b from-sky-400/14 via-zinc-900/85 to-zinc-900/90"
                     : cell.holiday
-                    ? "border-amber-200/35 bg-amber-300/10"
-                    : "border-white/10 bg-zinc-900/50"
+                      ? "border-amber-200/35 bg-amber-300/10"
+                      : "border-white/10 bg-zinc-900/50"
                 } ${cell.event && cell.holiday ? "ring-1 ring-amber-200/30" : ""} ${
                   cell.event && cell.event.date === selectedDate
                     ? "ring-2 ring-sky-200/70"
@@ -319,22 +328,20 @@ export default function RaceCalendar({
                     aria-pressed={cell.event.date === selectedDate}
                   >
                     <p
-                      className={`text-[0.56rem] font-semibold uppercase tracking-[0.14em] ${
-                        cell.holiday ? "text-amber-100/90" : "text-zinc-300"
-                      }`}
+                      className={`text-[0.56rem] font-semibold uppercase tracking-[0.14em] ${cell.holiday ? "text-amber-100/90" : "text-zinc-300"}`}
                     >
                       {cell.day}
                     </p>
                     <div className="mt-1.5 flex flex-1 flex-col gap-1">
-                      <p className="break-words text-[0.54rem] font-semibold uppercase leading-snug tracking-[0.12em] text-zinc-100">
+                      <p className="wrap-break-word text-[0.54rem] font-semibold uppercase leading-snug tracking-[0.12em] text-zinc-100">
                         {cell.event.title}
                       </p>
-                      <p className="break-words text-[0.5rem] uppercase leading-snug tracking-[0.08em] text-zinc-400">
+                      <p className="wrap-break-word text-[0.5rem] uppercase leading-snug tracking-[0.08em] text-zinc-400">
                         {cell.event.track}
                       </p>
                       <div className="mt-auto flex flex-wrap items-center gap-1">
                         <span
-                          className={`inline-flex w-fit rounded-full border px-1.5 py-0.5 text-[0.45rem] font-semibold uppercase tracking-[0.1em] ${statusClasses[cell.event.status]}`}
+                          className={`inline-flex w-fit rounded-full border px-1.5 py-0.5 text-[0.45rem] font-semibold uppercase tracking-widest ${statusClasses[cell.event.status]}`}
                         >
                           {cell.event.status === "Testing"
                             ? "Testing"
@@ -342,7 +349,7 @@ export default function RaceCalendar({
                         </span>
                         {cell.holiday ? (
                           <span
-                            className="inline-flex w-fit rounded-full border border-amber-200/40 bg-amber-300/15 px-1.5 py-0.5 text-[0.43rem] font-semibold uppercase tracking-[0.1em] text-amber-100"
+                            className="inline-flex w-fit rounded-full border border-amber-200/40 bg-amber-300/15 px-1.5 py-0.5 text-[0.43rem] font-semibold uppercase tracking-widest text-amber-100"
                             title={cell.holiday.name}
                           >
                             Holiday
@@ -363,7 +370,7 @@ export default function RaceCalendar({
                     {!cell.event && cell.holiday ? (
                       <div className="mt-1.5 flex flex-col gap-1">
                         <span
-                          className="inline-flex w-fit rounded-full border border-amber-200/40 bg-amber-300/15 px-1.5 py-0.5 text-[0.43rem] font-semibold uppercase tracking-[0.1em] text-amber-100"
+                          className="inline-flex w-fit rounded-full border border-amber-200/40 bg-amber-300/15 px-1.5 py-0.5 text-[0.43rem] font-semibold uppercase tracking-widest text-amber-100"
                           title={cell.holiday.name}
                         >
                           Holiday
@@ -376,9 +383,9 @@ export default function RaceCalendar({
             ) : (
               <div
                 key={`${month.key}-${cellIndex}`}
-                className="min-h-[5.25rem] rounded-lg border border-white/5 bg-zinc-900/30 sm:min-h-[6.5rem] lg:min-h-[7.25rem]"
+                className="min-h-21 rounded-lg border border-white/5 bg-zinc-900/30 sm:min-h-26 lg:min-h-29"
               />
-            )
+            ),
           )}
         </div>
         <div className="mt-4 rounded-xl border border-white/10 bg-zinc-950/40 p-4">
@@ -396,7 +403,7 @@ export default function RaceCalendar({
                 </p>
                 <p className="mt-2 text-[0.62rem] uppercase tracking-[0.2em] text-zinc-400">
                   {fullDateFormatter.format(
-                    new Date(`${selectedEvent.date}T00:00:00`)
+                    new Date(`${selectedEvent.date}T00:00:00`),
                   )}
                 </p>
               </div>
@@ -423,4 +430,3 @@ export default function RaceCalendar({
     </div>
   );
 }
-
