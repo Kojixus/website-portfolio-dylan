@@ -1,0 +1,13 @@
+﻿<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 128' role='img' aria-label='Bell Helmets logo'>
+  <defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0%' stop-color='#58b7ff'/>
+      <stop offset='100%' stop-color='#d8b46b'/>
+    </linearGradient>
+  </defs>
+  <rect x='1' y='1' width='358' height='126' rx='20' fill='#0b1422' stroke='rgba(255,255,255,0.2)'/>
+  <rect x='18' y='24' width='80' height='80' rx='16' fill='url(#g)'/>
+  <text x='58' y='76' text-anchor='middle' font-size='28' font-family='Arial, sans-serif' font-weight='700' fill='#07101c'>BH</text>
+  <text x='120' y='54' font-size='19' font-family='Arial, sans-serif' font-weight='700' fill='#dce9f8' letter-spacing='1.2'>BELL HELMETS</text>
+  <text x='120' y='84' font-size='12' font-family='Arial, sans-serif' fill='#8ea6be' letter-spacing='2'>SPONSOR</text>
+</svg>
