@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PageTransitionProvider from "../components/PageTransitionProvider";
+import PageTransitionProvider from "../components/page-transition-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {

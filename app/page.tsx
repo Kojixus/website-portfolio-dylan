@@ -1,31 +1,14 @@
-import Image from "next/image";
-import SponsorMarquee from "../components/SponsorMarquee";
-import TrackModelPanel from "../components/TrackModelPanel";
-import TransitionLink from "../components/TransitionLink";
+﻿import Image from "next/image";
+import TrackModelPanel from "../components/track-model-panel";
+import TransitionLink from "../components/transition-link";
+import { raceEvents } from "../data/raceEvents";
 
-const leadPhoto = "/photos/20250329_CHAMPCAR_DAYTONA_TDP-5648.jpeg";
-const SHOW_SPONSORS = false;
-
+const leadPhoto = "/photos/dd-2026-01.jpg";
 const driverProfile = [
   { label: "Name", value: "Dylan Dana" },
   { label: "Discipline", value: "Endurance Racing" },
   { label: "Favorite Track", value: "Sebring International Raceway" },
   { label: "Series Focus", value: "ChampCar Platform" },
-];
-
-const raceTraits = [
-  {
-    title: "Composure",
-    copy: "Calm in-car decision making under pressure and traffic.",
-  },
-  {
-    title: "Consistency",
-    copy: "Repeatable pace and disciplined input over long stints.",
-  },
-  {
-    title: "Technical Feedback",
-    copy: "Clear communication to convert data and feel into setup changes.",
-  },
 ];
 
 const drivingAccomplishments = [
@@ -65,7 +48,6 @@ const coachingAreas = [
 const primaryNav = [
   { href: "/on-track", label: "On Track Page" },
   { href: "#video-highlights", label: "Videos" },
-  ...(SHOW_SPONSORS ? [{ href: "#sponsors", label: "Sponsors" }] : []),
   { href: "#sebring", label: "Favorite Track" },
   { href: "#contact", label: "Coaching" },
 ];
@@ -73,21 +55,21 @@ const primaryNav = [
 const raceFocus = [
   {
     title: "On Track",
-    copy: "Dedicated race page with schedule, stats, and creative telemetry focus.",
+    copy: "Dedicated race page with schedule, stats, and track-focused storytelling.",
     href: "/on-track",
   },
   {
     title: "Off Track",
-    copy: "Media and sponsor-facing visuals from race weekends and coaching.",
-    href: SHOW_SPONSORS ? "#sponsors" : "#video-highlights",
+    copy: "Media highlights, race-weekend storylines, and coaching content.",
+    href: "#video-highlights",
   },
 ];
 
 const socialLinks = [
   {
-    href: "https://www.instagram.com/dd_fc_t",
+    href: "https://www.instagram.com/dylandana55",
     label: "Instagram",
-    handle: "@dd_fc_t",
+    handle: "@dylandana55",
   },
   {
     href: "https://www.youtube.com/@DylanDana",
@@ -101,24 +83,38 @@ const videoHighlights = [
     title: "Daytona Race Recap",
     copy: "Key moments, pace notes, and race execution highlights.",
     href: "https://www.youtube.com/@DylanDana/videos",
-    thumbnail: "/photos/20250329_CHAMPCAR_DAYTONA_TDP-5563.jpg",
+    thumbnail: "/photos/dd-2026-02.jpg",
     position: "object-[52%_28%]",
   },
   {
     title: "Sebring Prep Session",
     copy: "Track prep focus for braking zones, rhythm, and consistency.",
     href: "https://www.youtube.com/@DylanDana/videos",
-    thumbnail: "/photos/20250329_CHAMPCAR_DAYTONA_TDP-5596.jpg",
+    thumbnail: "/photos/dd-2026-03.jpg",
     position: "object-[55%_26%]",
   },
   {
     title: "Onboard Coaching Breakdown",
     copy: "Corner-entry and exit analysis for cleaner, faster laps.",
     href: "https://www.youtube.com/@DylanDana/videos",
-    thumbnail: "/photos/20250329_CHAMPCAR_DAYTONA_TDP-2687.jpg",
+    thumbnail: "/photos/dd-2026-04.jpg",
     position: "object-[50%_26%]",
   },
 ];
+
+const scheduleDateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+});
+
+const upcomingEvents = raceEvents
+  .filter((event) => event.status !== "Complete")
+  .sort((a, b) => a.date.localeCompare(b.date))
+  .slice(0, 3);
+
+const recentResults = [...raceEvents]
+  .sort((a, b) => b.date.localeCompare(a.date))
+  .slice(0, 5);
 
 export default function Home() {
   return (
@@ -129,17 +125,17 @@ export default function Home() {
       <div className="pointer-events-none absolute bottom-[24%] left-[7%] h-64 w-64 rounded-full bg-amber-200/10 blur-3xl" />
 
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 pb-8 md:gap-10 md:pb-10">
-        <header className="nav-shell reveal sticky top-3 z-40 flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-white/15 bg-black/40 px-5 py-3 backdrop-blur-md">
-          <p className="font-display text-lg tracking-[0.22em]">
+        <header className="nav-shell reveal sticky top-2 z-40 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-md sm:top-3 sm:gap-3 sm:rounded-3xl sm:px-5 sm:py-3">
+          <p className="font-display text-base tracking-[0.2em] sm:text-lg sm:tracking-[0.22em]">
             DANA // DRIVER <span className="gold-accent">&bull;</span>
           </p>
-          <nav className="flex flex-wrap items-center gap-2 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-zinc-300 sm:gap-3">
-            {primaryNav.map((item) => (
+          <nav className="nav-links flex w-full flex-nowrap items-center gap-1.5 overflow-x-auto pb-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-zinc-300 sm:w-auto sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0 sm:text-[0.62rem] sm:tracking-[0.2em]">
+            {primaryNav.map((item) =>
               item.href.startsWith("/") ? (
                 <TransitionLink
                   key={item.label}
                   href={item.href}
-                  className="nav-chip rounded-full border border-white/20 px-3 py-1.5 transition hover:border-sky-200/70 hover:text-sky-100"
+                  className="nav-chip rounded-full border border-white/20 px-2.5 py-1 transition hover:border-sky-200/70 hover:text-sky-100 sm:px-3 sm:py-1.5"
                 >
                   {item.label}
                 </TransitionLink>
@@ -147,28 +143,43 @@ export default function Home() {
                 <a
                   key={item.label}
                   href={item.href}
-                  className="nav-chip rounded-full border border-white/20 px-3 py-1.5 transition hover:border-sky-200/70 hover:text-sky-100"
+                  className="nav-chip rounded-full border border-white/20 px-2.5 py-1 transition hover:border-sky-200/70 hover:text-sky-100 sm:px-3 sm:py-1.5"
                 >
                   {item.label}
                 </a>
-              )
-            ))}
+              ),
+            )}
           </nav>
         </header>
 
         <section className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:items-end">
-          <div className="space-y-7">
-            <p className="reveal text-xs font-semibold uppercase tracking-[0.25em] text-sky-200/90">
+          <div className="space-y-5 sm:space-y-7">
+            <p className="reveal text-xs font-medium uppercase tracking-[0.25em] text-zinc-100/90">
               Driver Identity
             </p>
-            <h1 className="reveal font-display text-4xl uppercase leading-[0.88] tracking-[0.04em] text-balance sm:text-6xl lg:text-7xl">
-              Precision,
-              <span className="block text-sky-300">Pressure, Pace.</span>
+            <h1 className="reveal font-display text-[2.35rem] uppercase leading-[0.9] tracking-[0.04em] text-balance sm:text-6xl lg:text-7xl">
+              <span className="text-amber-200">Precision,</span>
+              <span className="block font-normal text-sky-200">
+                Pressure, Pace.
+              </span>
             </h1>
             <p className="reveal max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-              Photo-first identity with a coaching-ready layout. The storytelling
-              centers on in-car focus, race execution, and technical feedback.
+              Photo-first identity with a coaching-ready layout. The
+              storytelling centers on in-car focus, race execution, and
+              technical feedback.
             </p>
+
+            <div className="reveal flex flex-wrap gap-2.5">
+              <a
+                href="mailto:coaching@dylandana.com"
+                className="cta-primary gold-outline"
+              >
+                Book Coaching
+              </a>
+              <TransitionLink href="/on-track" className="cta-secondary">
+                View On Track
+              </TransitionLink>
+            </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               {driverProfile.map((item, index) => (
@@ -180,7 +191,7 @@ export default function Home() {
                   <p className="text-[0.65rem] uppercase tracking-[0.22em] text-zinc-400">
                     {item.label}
                   </p>
-                  <p className="mt-2 font-display text-2xl tracking-[0.07em] text-sky-300">
+                  <p className="mt-2 font-display text-2xl tracking-[0.07em] text-zinc-100">
                     {item.value}
                   </p>
                 </article>
@@ -201,7 +212,7 @@ export default function Home() {
           </div>
 
           <figure className="reveal overflow-hidden rounded-3xl border border-sky-200/25 bg-zinc-900/80 p-3 shadow-2xl">
-            <div className="relative h-[300px] overflow-hidden rounded-2xl sm:h-[420px] lg:h-[520px]">
+            <div className="relative h-[260px] overflow-hidden rounded-2xl sm:h-[390px] lg:h-[500px]">
               <Image
                 src={leadPhoto}
                 alt="Dylan Dana seated in race car wearing a blue and white helmet."
@@ -213,75 +224,101 @@ export default function Home() {
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-transparent" />
             </div>
             <figcaption className="px-2 pt-4 text-xs uppercase tracking-[0.2em] text-zinc-400">
-              Recommended Hero: cockpit portrait with eyes visible
+              Photo: Dylan Dana in the cockpit during a practice session at
+              Daytona International Speedway, 2025. Credit: Tyler Duane
             </figcaption>
           </figure>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2">
-          {raceFocus.map((item, index) => (
-            item.href.startsWith("/") ? (
-              <TransitionLink
-                key={item.title}
-                href={item.href}
-                className="reveal rounded-2xl border border-sky-200/20 bg-zinc-900/75 p-5 transition hover:border-sky-200/60 hover:bg-zinc-900"
-                style={{ animationDelay: `${130 + index * 85}ms` }}
-              >
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-sky-200/85">
-                  {item.title}
-                </p>
-                <p className="mt-3 font-display text-3xl uppercase tracking-[0.08em]">
-                  Explore
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">
-                  {item.copy}
-                </p>
-              </TransitionLink>
-            ) : (
-              <a
-                key={item.title}
-                href={item.href}
-                className="reveal rounded-2xl border border-sky-200/20 bg-zinc-900/75 p-5 transition hover:border-sky-200/60 hover:bg-zinc-900"
-                style={{ animationDelay: `${130 + index * 85}ms` }}
-              >
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-sky-200/85">
-                  {item.title}
-                </p>
-                <p className="mt-3 font-display text-3xl uppercase tracking-[0.08em]">
-                  Explore
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">
-                  {item.copy}
-                </p>
-              </a>
-            )
-          ))}
-        </section>
-
-        <section
-          id="traits"
-          className="grid gap-4 md:grid-cols-3"
-          aria-label="Driver strengths"
-        >
-          {raceTraits.map((trait, index) => (
-            <article
-              key={trait.title}
-              className="reveal rounded-2xl border border-sky-200/15 bg-zinc-900/65 p-5"
-              style={{ animationDelay: `${140 + index * 80}ms` }}
-            >
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-sky-200/80">
-                Driver Trait
+        <section className="reveal gold-outline rounded-3xl border border-white/15 bg-zinc-900/70 p-5 sm:p-6 lg:p-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-sky-200/90">
+                Schedule Snapshot
               </p>
-              <h2 className="mt-3 font-display text-2xl uppercase leading-tight tracking-[0.06em]">
-                {trait.title}
+              <h2 className="mt-2 font-display text-3xl uppercase tracking-[0.07em] sm:text-4xl">
+                Upcoming Race Weekends
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-zinc-300">
-                {trait.copy}
-              </p>
-            </article>
-          ))}
+            </div>
+            <TransitionLink href="/on-track" className="cta-secondary">
+              View Full Schedule
+            </TransitionLink>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {upcomingEvents.map((event) => {
+              const badgeClass =
+                event.status === "Testing"
+                  ? "border-cyan-200/35 bg-cyan-400/15 text-cyan-100"
+                  : "border-amber-200/45 bg-amber-300/18 text-amber-100";
+              const badgeLabel =
+                event.status === "Testing" ? "Testing" : "Race Weekend";
+
+              return (
+                <article
+                  key={`${event.date}-${event.title}`}
+                  className="rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <p className="text-[0.62rem] uppercase tracking-[0.22em] text-zinc-400">
+                    {scheduleDateFormatter.format(
+                      new Date(`${event.date}T00:00:00`),
+                    )}
+                  </p>
+                  <p className="mt-2 font-display text-2xl uppercase tracking-[0.06em] text-sky-300">
+                    {event.title}
+                  </p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.18em] text-zinc-300">
+                    {event.track}
+                  </p>
+                  <span
+                    className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.2em] ${badgeClass}`}
+                  >
+                    {badgeLabel}
+                  </span>
+                </article>
+              );
+            })}
+          </div>
         </section>
 
+        <section className="reveal rounded-3xl border border-white/15 bg-black/35 p-5 sm:p-6 lg:p-8">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-400">
+                Recent Results
+              </p>
+              <h2 className="mt-2 font-display text-3xl uppercase tracking-[0.07em] sm:text-4xl">
+                Last 5 Events
+              </h2>
+            </div>
+            <TransitionLink href="/on-track" className="cta-secondary">
+              Full Calendar
+            </TransitionLink>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {recentResults.map((event) => (
+              <article
+                key={`${event.date}-${event.title}`}
+                className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4"
+              >
+                <p className="text-[0.6rem] uppercase tracking-[0.22em] text-zinc-400">
+                  {scheduleDateFormatter.format(
+                    new Date(`${event.date}T00:00:00`),
+                  )}
+                </p>
+                <p className="mt-2 text-sm uppercase tracking-[0.14em] text-zinc-200">
+                  {event.track}
+                </p>
+                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-zinc-400">
+                  {event.status === "Complete"
+                    ? event.result
+                    : event.status === "Testing"
+                      ? "Data Session"
+                      : "Result TBD"}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
         <section
           id="accomplishments"
           className="rounded-3xl border border-white/15 bg-black/35 p-5 sm:p-6 lg:p-8"
@@ -314,9 +351,70 @@ export default function Home() {
               </article>
             ))}
           </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="/partner-deck.pdf" className="cta-primary" download>
+              Partnership Deck
+            </a>
+            <a href="/media-kit.pdf" className="cta-secondary" download>
+              Media Kit
+            </a>
+            <a href="mailto:coaching@dylandana.com" className="cta-secondary">
+              Sponsor Inquiry
+            </a>
+          </div>
         </section>
 
-
+        <section
+          id="partners"
+          className="reveal gold-outline rounded-3xl border border-sky-200/25 bg-gradient-to-r from-sky-500/12 via-black/40 to-transparent p-5 sm:p-6 lg:p-8"
+        >
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/90">
+                Partnerships
+              </p>
+              <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.07em] sm:text-5xl">
+                Sponsor-Ready Program
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <a href="/partner-deck.pdf" className="cta-primary" download>
+                Partnership Deck
+              </a>
+              <a href="/media-kit.pdf" className="cta-secondary" download>
+                Media Kit
+              </a>
+            </div>
+          </div>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-zinc-200 sm:text-base">
+            Open inventory for 2026 includes branded livery placement, in-car
+            content, and race-weekend hospitality. Replace the placeholders
+            below with sponsor logos or partners you are highlighting.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-4">
+            {[
+              "Title Partner",
+              "Technical Partner",
+              "Support Partner",
+              "Community Partner",
+            ].map((label) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-sky-200/20 bg-black/35 px-4 py-6 text-center text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-sky-100/80"
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="mailto:coaching@dylandana.com" className="cta-secondary">
+              Sponsor Inquiry
+            </a>
+            <TransitionLink href="/on-track" className="cta-secondary">
+              View Schedule
+            </TransitionLink>
+          </div>
+        </section>
 
         <section
           id="video-highlights"
@@ -365,6 +463,19 @@ export default function Home() {
               </a>
             ))}
           </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href="https://www.youtube.com/@DylanDana/videos"
+              target="_blank"
+              rel="noreferrer"
+              className="cta-primary"
+            >
+              Watch Full Channel
+            </a>
+            <TransitionLink href="/on-track" className="cta-secondary">
+              View On Track
+            </TransitionLink>
+          </div>
         </section>
 
         <section
@@ -387,25 +498,27 @@ export default function Home() {
 
           <aside className="reveal rounded-3xl border border-white/15 bg-black/45 p-3 shadow-2xl backdrop-blur-sm">
             <p className="mb-3 px-1 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-zinc-400">
-              3D Track // Driver Focus
+              3D Analytics // Driver Focus
             </p>
             <TrackModelPanel />
             <div className="mt-4 space-y-2 px-1 pb-1">
               <p className="text-[0.68rem] uppercase tracking-[0.18em] text-sky-200/90">
-                3D Track Model
+                Interactive WebGL Analytics
               </p>
               <p className="text-[0.68rem] uppercase tracking-[0.18em] text-zinc-300">
-                Built from your track reference with a live WebGL scene
+                Race-car data measuring animation with live speed/load HUD
               </p>
             </div>
           </aside>
-        </section>
-
-        {SHOW_SPONSORS ? (
-          <div id="sponsors">
-            <SponsorMarquee />
+          <div className="reveal flex flex-wrap gap-3 lg:col-span-2">
+            <a href="mailto:coaching@dylandana.com" className="cta-primary">
+              Sponsor Inquiry
+            </a>
+            <a href="#contact" className="cta-secondary">
+              Book Coaching
+            </a>
           </div>
-        ) : null}
+        </section>
 
         <section
           id="contact"
@@ -436,18 +549,12 @@ export default function Home() {
           </div>
 
           <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="mailto:coaching@dylandana.com"
-              className="rounded-full bg-sky-500 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-sky-950 transition hover:bg-sky-400"
-            >
+            <a href="mailto:coaching@dylandana.com" className="cta-primary">
               Email Coaching
             </a>
-            <a
-              href="#"
-              className="rounded-full border border-white/30 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] transition hover:bg-white/10"
-            >
-              Add Booking Link
-            </a>
+            <TransitionLink href="/on-track" className="cta-secondary">
+              Explore On Track
+            </TransitionLink>
           </div>
         </section>
 
@@ -478,6 +585,18 @@ export default function Home() {
           </p>
           <p className="mt-5 text-xs uppercase tracking-[0.2em] text-zinc-500">
             Dylan Dana // Always bringing the fight.
+          </p>
+          <p className="mt-2 text-[0.62rem] uppercase tracking-[0.18em] text-zinc-500">
+            Built by{" "}
+            <a
+              href="https://www.linkedin.com/in/dezsokovi/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-zinc-200 transition hover:text-amber-200"
+            >
+              Dezso Kovi
+            </a>
+            .
           </p>
         </footer>
       </div>
