@@ -1,57 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { type AnchorHTMLAttributes, type MouseEvent } from "react";
+import { usePathname } from "next/navigation";
+import type { ComponentProps, MouseEvent } from "react";
 import { usePageTransition } from "./page-transition-provider";
 
-type TransitionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
-  href: string;
-  prefetch?: boolean;
-};
+type TransitionLinkProps = ComponentProps<typeof Link>;
 
 export default function TransitionLink({
   href,
   onClick,
-  prefetch,
-  target,
   ...rest
 }: TransitionLinkProps) {
-  const { navigate } = usePageTransition();
+  const { startTransition } = usePageTransition();
+  const pathname = usePathname();
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
 
-    if (event.defaultPrevented) {
+    // Let the browser handle modified clicks and anything already cancelled.
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
       return;
     }
 
-    if (event.button !== 0) {
+    // No loader when the link points at the page we are already on.
+    if (typeof href === "string" && href.split("#")[0] === pathname) {
       return;
     }
 
-    if (event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) {
-      return;
-    }
-
-    if (target && target !== "_self") {
-      return;
-    }
-
-    if (!href.startsWith("/")) {
-      return;
-    }
-
-    event.preventDefault();
-    navigate(href);
+    startTransition();
   };
 
-  return (
-    <Link
-      href={href}
-      onClick={handleClick}
-      prefetch={prefetch}
-      target={target}
-      {...rest}
-    />
-  );
+  return <Link href={href} onClick={handleClick} {...rest} />;
 }

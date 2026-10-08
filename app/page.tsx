@@ -1,67 +1,115 @@
-﻿import Image from "next/image";
+import Image from "next/image";
+import SiteHeader from "../components/site-header";
 import TrackModelPanel from "../components/track-model-panel";
 import TransitionLink from "../components/transition-link";
-import { raceEvents } from "../data/raceEvents";
+import { ResultRow } from "../components/results-table";
+import {
+  careerStats,
+  completedRaces,
+  countdownLabel,
+  daysUntil,
+  raceEvents,
+  teams,
+  todayISO,
+  type TeamId,
+} from "../data/raceEvents";
+import { photos, type Photo } from "../data/photos";
 
-const leadPhoto = "/photos/dd-2026-01.jpg";
-const driverProfile = [
-  { label: "Name", value: "Dylan Dana" },
-  { label: "Discipline", value: "Endurance Racing" },
-  { label: "Favorite Track", value: "Sebring International Raceway" },
-  { label: "Series Focus", value: "ChampCar Platform" },
+// "What's next" depends on today's date, so re-render at least hourly.
+export const revalidate = 3600;
+
+const leadPhoto = photos.portrait;
+
+const INSTRUCTOR_ROLE = "Driving instructor at The Motor Enclave, Tampa";
+
+const cars: { team: TeamId; photo: Photo; position: string }[] = [
+  { team: "levelOne", photo: photos.sebringPan, position: "object-[40%_60%]" },
+  { team: "kovi", photo: photos.integraFront, position: "object-[50%_45%]" },
 ];
 
-const drivingAccomplishments = [
+const CONTACT_EMAIL = "coaching@dylandana.com";
+
+function mailto(subject: string) {
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+}
+
+const primaryNav = [
+  { href: "#cars", label: "Cars" },
+  { href: "#results", label: "Results" },
+  { href: "#video", label: "Video" },
+  { href: "#coaching", label: "Coaching" },
+  { href: "#partners", label: "Partners" },
+  { href: "/on-track", label: "Full season" },
+];
+
+const accomplishments = [
   {
     season: "2021",
-    title: "Summer League Champion",
+    title: "Summer league champion",
     detail:
-      "Championship achievement shown on helmet credentials and race identity.",
+      "Took the title, and the helmet has carried it ever since. It was a sprint series, which turned out to be the wrong habit to bring to endurance racing.",
   },
   {
-    season: "2022",
-    title: "ChampCar Program Growth",
+    season: "2021",
+    title: "ChampCar debut with Kovi Racing",
     detail:
-      "Expanded race approach from sprint mindset to endurance strategy and tire management.",
+      "Palm Beach Enduros in the #214 Integra. Different job entirely: tires have to last, fuel has to last, and so does concentration — a fast lap is worth nothing if it costs you the stint.",
   },
   {
-    season: "2023",
-    title: "ChampCar Competitive Campaign",
+    season: "2024",
+    title: "Joined Level One Racing",
     detail:
-      "Continued progression in stint consistency, traffic handling, and in-car communication.",
+      "Added the #412 Miata, racing in the deep A-class field. First time out: second in class at the Daytona 14-Hour.",
   },
   {
-    season: "Daytona",
-    title: "Endurance Event Participation",
+    season: "2025",
+    title: "Overall win at Sebring",
     detail:
-      "Built race-weekend execution flow with cockpit focus and repeatable prep routine.",
+      "Level One's #412 won Sebring Under the Stars outright, and Kovi Racing's #214 took the F-class win in the same race.",
+  },
+  {
+    season: "Now",
+    title: "Instructing at The Motor Enclave",
+    detail:
+      "Driving instructor at The Motor Enclave in Tampa, turning what endurance racing teaches into laps for other drivers.",
   },
 ];
 
 const coachingAreas = [
-  "Racecraft fundamentals and overtaking decisions",
-  "Onboard review + braking and line analysis",
-  "Stint planning, tire management, and consistency",
-  "Driver mindset and pre-session preparation",
+  "Racecraft and when an overtake is actually on",
+  "Onboard review — braking points, line, and where the time really went",
+  "Stint planning, tire management, and holding a pace",
+  "Pre-session routine, so the first lap isn't the warm-up",
 ];
 
-const primaryNav = [
-  { href: "/on-track", label: "On Track Page" },
-  { href: "#video-highlights", label: "Videos" },
-  { href: "#sebring", label: "Favorite Track" },
-  { href: "#contact", label: "Coaching" },
+const partnerPackages = [
+  { tier: "Title", detail: "Full livery, suit, and helmet placement" },
+  { tier: "Technical", detail: "Parts, fluids, or data support" },
+  { tier: "Support", detail: "Panel space and in-car camera time" },
+  { tier: "Community", detail: "Karting and grassroots driver programs" },
 ];
 
-const raceFocus = [
+const videoHighlights = [
   {
-    title: "On Track",
-    copy: "Dedicated race page with schedule, stats, and track-focused storytelling.",
-    href: "/on-track",
+    title: "Daytona race recap",
+    copy: "Where the race was won and lost, stint by stint.",
+    href: "https://www.youtube.com/@DylanDana/videos",
+    thumbnail: photos.integraPan.src,
+    position: "object-[35%_55%]",
   },
   {
-    title: "Off Track",
-    copy: "Media highlights, race-weekend storylines, and coaching content.",
-    href: "#video-highlights",
+    title: "Sebring prep",
+    copy: "Braking zones and rhythm on the roughest surface we run.",
+    href: "https://www.youtube.com/@DylanDana/videos",
+    thumbnail: photos.sebringPan.src,
+    position: "object-[40%_60%]",
+  },
+  {
+    title: "Onboard coaching breakdown",
+    copy: "A corner pulled apart on entry and exit, with the fix.",
+    href: "https://www.youtube.com/@DylanDana/videos",
+    thumbnail: photos.sebringDirt.src,
+    position: "object-[50%_58%]",
   },
 ];
 
@@ -78,528 +126,516 @@ const socialLinks = [
   },
 ];
 
-const videoHighlights = [
-  {
-    title: "Daytona Race Recap",
-    copy: "Key moments, pace notes, and race execution highlights.",
-    href: "https://www.youtube.com/@DylanDana/videos",
-    thumbnail: "/photos/dd-2026-02.jpg",
-    position: "object-[52%_28%]",
-  },
-  {
-    title: "Sebring Prep Session",
-    copy: "Track prep focus for braking zones, rhythm, and consistency.",
-    href: "https://www.youtube.com/@DylanDana/videos",
-    thumbnail: "/photos/dd-2026-03.jpg",
-    position: "object-[55%_26%]",
-  },
-  {
-    title: "Onboard Coaching Breakdown",
-    copy: "Corner-entry and exit analysis for cleaner, faster laps.",
-    href: "https://www.youtube.com/@DylanDana/videos",
-    thumbnail: "/photos/dd-2026-04.jpg",
-    position: "object-[50%_26%]",
-  },
-];
-
-const scheduleDateFormatter = new Intl.DateTimeFormat("en-US", {
+const shortDate = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
+  timeZone: "UTC",
 });
 
-const upcomingEvents = raceEvents
-  .filter((event) => event.status !== "Complete")
-  .sort((a, b) => a.date.localeCompare(b.date))
-  .slice(0, 3);
+const longDate = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  timeZone: "UTC",
+});
 
-const recentResults = [...raceEvents]
-  .sort((a, b) => b.date.localeCompare(a.date))
-  .slice(0, 5);
+function asDate(iso: string) {
+  return new Date(`${iso}T00:00:00Z`);
+}
 
 export default function Home() {
+  const today = todayISO();
+
+  // Decide "upcoming" by the calendar, not the stored status, so a test day
+  // that has already happened drops off the list on its own.
+  const upcomingEvents = raceEvents
+    .filter((event) => event.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 3);
+
+  const nextEvent = upcomingEvents[0];
+  const nextCountdown = nextEvent
+    ? countdownLabel(daysUntil(nextEvent.date, today))
+    : null;
+
+  const recentResults = completedRaces.slice(0, 6);
+  const career = careerStats(completedRaces);
+
   return (
-    <main className="race-surface relative min-h-screen overflow-x-clip px-4 py-6 text-zinc-100 sm:px-8 sm:py-8 lg:px-12">
-      <div className="track-grid pointer-events-none absolute inset-0 opacity-40" />
-      <div className="pointer-events-none absolute -top-28 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-sky-500/30 blur-3xl" />
-      <div className="pointer-events-none absolute top-14 right-[10%] h-72 w-72 rounded-full bg-amber-300/20 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[24%] left-[7%] h-64 w-64 rounded-full bg-amber-200/10 blur-3xl" />
+    <>
+      <SiteHeader section="Driver" items={primaryNav} />
 
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 pb-8 md:gap-10 md:pb-10">
-        <header className="nav-shell reveal sticky top-2 z-40 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/15 bg-black/40 px-3 py-2 backdrop-blur-md sm:top-3 sm:gap-3 sm:rounded-3xl sm:px-5 sm:py-3">
-          <p className="font-display text-base tracking-[0.2em] sm:text-lg sm:tracking-[0.22em]">
-            DANA // DRIVER <span className="gold-accent">&bull;</span>
-          </p>
-          <nav className="nav-links flex w-full flex-nowrap items-center gap-1.5 overflow-x-auto pb-1 text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-zinc-300 sm:w-auto sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0 sm:text-[0.62rem] sm:tracking-[0.2em]">
-            {primaryNav.map((item) =>
-              item.href.startsWith("/") ? (
-                <TransitionLink
-                  key={item.label}
-                  href={item.href}
-                  className="nav-chip rounded-full border border-white/20 px-2.5 py-1 transition hover:border-sky-200/70 hover:text-sky-100 sm:px-3 sm:py-1.5"
-                >
-                  {item.label}
-                </TransitionLink>
-              ) : (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="nav-chip rounded-full border border-white/20 px-2.5 py-1 transition hover:border-sky-200/70 hover:text-sky-100 sm:px-3 sm:py-1.5"
-                >
-                  {item.label}
-                </a>
-              ),
-            )}
-          </nav>
-        </header>
-
-        <section className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:items-end">
-          <div className="space-y-5 sm:space-y-7">
-            <p className="reveal text-xs font-medium uppercase tracking-[0.25em] text-zinc-100/90">
-              Driver Identity
-            </p>
-            <h1 className="reveal font-display text-[2.35rem] uppercase leading-[0.9] tracking-[0.04em] text-balance sm:text-6xl lg:text-7xl">
-              <span className="text-amber-200">Precision,</span>
-              <span className="block font-normal text-sky-200">
-                Pressure, Pace.
+      <main id="main" className="mx-auto w-full max-w-5xl px-5 pb-20 sm:px-8">
+        {/* Hero */}
+        <section className="grid gap-10 pt-14 pb-16 lg:grid-cols-[1fr_0.9fr] lg:items-start lg:gap-12">
+          <div>
+            <p className="eyebrow eyebrow-accent">Endurance racing · ChampCar</p>
+            <h1 className="mt-4 text-5xl sm:text-6xl lg:text-[4.25rem]">
+              <span className="text-amber-200">Dylan Dana</span>
+              <span className="mt-1 block font-normal text-sky-200">
+                Endurance driver
               </span>
             </h1>
-            <p className="reveal max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
-              Photo-first identity with a coaching-ready layout. The
-              storytelling centers on in-car focus, race execution, and
-              technical feedback.
+            <p className="lede mt-6 max-w-xl text-lg">
+              I race long-distance events on the ChampCar platform — Daytona,
+              Sebring, and most of what falls between them — in two cars: Level
+              One Racing&apos;s #412 Miata and Kovi Racing&apos;s #214 Integra.
+              During the week I&apos;m a driving instructor at The Motor Enclave
+              in Tampa.
             </p>
 
-            <div className="reveal flex flex-wrap gap-2.5">
-              <a
-                href="mailto:coaching@dylandana.com"
-                className="cta-primary gold-outline"
-              >
-                Book Coaching
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#coaching" className="cta-primary">
+                Book coaching
               </a>
               <TransitionLink href="/on-track" className="cta-secondary">
-                View On Track
+                Season and results
               </TransitionLink>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              {driverProfile.map((item, index) => (
-                <article
-                  key={item.label}
-                  className="reveal rounded-2xl border border-white/15 bg-black/35 p-4 backdrop-blur-sm"
-                  style={{ animationDelay: `${120 + index * 90}ms` }}
-                >
-                  <p className="text-[0.65rem] uppercase tracking-[0.22em] text-zinc-400">
-                    {item.label}
-                  </p>
-                  <p className="mt-2 font-display text-2xl tracking-[0.07em] text-zinc-100">
-                    {item.value}
-                  </p>
-                </article>
-              ))}
-            </div>
-
-            <article className="reveal rounded-2xl border border-amber-300/35 bg-gradient-to-r from-sky-500/20 via-transparent to-amber-300/10 p-4">
-              <p className="text-[0.62rem] uppercase tracking-[0.22em] text-amber-200/90">
-                Next Race
-              </p>
-              <p className="mt-2 font-display text-3xl uppercase tracking-[0.08em] text-sky-300">
-                Sebring Weekend
-              </p>
-              <p className="mt-2 text-xs uppercase tracking-[0.18em] text-zinc-300">
-                Endurance Preparation Block
-              </p>
-            </article>
+            <dl className="mt-10 max-w-md">
+              <div className="spec">
+                <dt>Driving for</dt>
+                <dd>
+                  Level One #{teams.levelOne.number} · Kovi #{teams.kovi.number}
+                </dd>
+              </div>
+              <div className="spec">
+                <dt>ChampCar starts</dt>
+                <dd>
+                  {career.starts}{" "}
+                  <span className="font-normal text-zinc-400">
+                    · {career.classWins} class wins · {career.overallWins} overall
+                  </span>
+                </dd>
+              </div>
+              <div className="spec">
+                <dt>Instructor</dt>
+                <dd>The Motor Enclave, Tampa</dd>
+              </div>
+              {nextEvent ? (
+                <div className="spec">
+                  <dt>Next out</dt>
+                  <dd>
+                    <a
+                      href="#schedule"
+                      className="meta text-base font-semibold text-amber-200 transition-colors hover:text-amber-100"
+                    >
+                      {nextEvent.title} · {longDate.format(asDate(nextEvent.date))}
+                    </a>
+                    <span className="mt-0.5 block text-[0.78rem] font-normal text-zinc-400">
+                      {nextCountdown}
+                    </span>
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
           </div>
 
-          <figure className="reveal overflow-hidden rounded-3xl border border-sky-200/25 bg-zinc-900/80 p-3 shadow-2xl">
-            <div className="relative h-[260px] overflow-hidden rounded-2xl sm:h-[390px] lg:h-[500px]">
+          <figure className="m-0">
+            <div className="relative h-[320px] overflow-hidden rounded-[4px] sm:h-[440px] lg:h-[520px]">
               <Image
-                src={leadPhoto}
-                alt="Dylan Dana seated in race car wearing a blue and white helmet."
+                src={leadPhoto.src}
+                alt={leadPhoto.alt}
                 fill
                 priority
-                sizes="(min-width: 1024px) 48vw, 100vw"
-                className="object-cover object-[52%_24%]"
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                className="object-cover object-[50%_30%]"
               />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-transparent to-transparent" />
             </div>
-            <figcaption className="px-2 pt-4 text-xs uppercase tracking-[0.2em] text-zinc-400">
-              Photo: Dylan Dana in the cockpit during a practice session at
-              Daytona International Speedway, 2025. Credit: Tyler Duane
+            <figcaption className="mt-3 text-[0.82rem] leading-relaxed text-zinc-500">
+              {leadPhoto.caption}
             </figcaption>
           </figure>
         </section>
 
-        <section className="reveal gold-outline rounded-3xl border border-white/15 bg-zinc-900/70 p-5 sm:p-6 lg:p-8">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-sky-200/90">
-                Schedule Snapshot
-              </p>
-              <h2 className="mt-2 font-display text-3xl uppercase tracking-[0.07em] sm:text-4xl">
-                Upcoming Race Weekends
-              </h2>
-            </div>
-            <TransitionLink href="/on-track" className="cta-secondary">
-              View Full Schedule
-            </TransitionLink>
+        {/* Cars */}
+        <section className="band" id="cars">
+          <div className="band-head">
+            <h2 className="text-3xl">The cars</h2>
+            <p className="meta">Two teams, two classes</p>
           </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {upcomingEvents.map((event) => {
-              const badgeClass =
-                event.status === "Testing"
-                  ? "border-cyan-200/35 bg-cyan-400/15 text-cyan-100"
-                  : "border-amber-200/45 bg-amber-300/18 text-amber-100";
-              const badgeLabel =
-                event.status === "Testing" ? "Testing" : "Race Weekend";
 
+          <div className="mt-6 grid gap-10 md:grid-cols-2">
+            {cars.map(({ team: id, photo, position }) => {
+              const team = teams[id];
+              const stats = careerStats(
+                completedRaces.filter((race) => race.team === id),
+              );
               return (
-                <article
-                  key={`${event.date}-${event.title}`}
-                  className="rounded-2xl border border-white/10 bg-black/40 p-4"
-                >
-                  <p className="text-[0.62rem] uppercase tracking-[0.22em] text-zinc-400">
-                    {scheduleDateFormatter.format(
-                      new Date(`${event.date}T00:00:00`),
-                    )}
-                  </p>
-                  <p className="mt-2 font-display text-2xl uppercase tracking-[0.06em] text-sky-300">
-                    {event.title}
-                  </p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.18em] text-zinc-300">
-                    {event.track}
-                  </p>
-                  <span
-                    className={`mt-3 inline-flex rounded-full border px-2.5 py-1 text-[0.5rem] font-semibold uppercase tracking-[0.2em] ${badgeClass}`}
+                <article key={id} className="car-card">
+                  <div className="relative h-56 overflow-hidden rounded-[4px] sm:h-64">
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      fill
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className={`object-cover ${position}`}
+                    />
+                  </div>
+                  <div className="mt-4 flex items-baseline justify-between gap-4">
+                    <h3 className="text-xl">{team.name}</h3>
+                    <p className="car-badge">
+                      <strong>#{team.number}</strong> {team.carClass} class
+                    </p>
+                  </div>
+                  <p className="mt-1 text-sm text-zinc-400">{team.car}</p>
+                  <dl className="mt-3">
+                    <div className="spec">
+                      <dt>Starts</dt>
+                      <dd className="meta">{stats.starts}</dd>
+                    </div>
+                    <div className="spec">
+                      <dt>Class wins · podiums</dt>
+                      <dd className="meta">
+                        {stats.classWins} · {stats.classPodiums}
+                      </dd>
+                    </div>
+                    <div className="spec">
+                      <dt>Best overall</dt>
+                      <dd className="meta text-amber-200">
+                        {stats.bestOverall ? `P${stats.bestOverall}` : "—"}
+                      </dd>
+                    </div>
+                  </dl>
+                  <a
+                    href={team.historyUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="link-quiet mt-4 self-start text-sm"
                   >
-                    {badgeLabel}
-                  </span>
+                    ChampCar team history <span aria-hidden="true">↗</span>
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </a>
                 </article>
               );
             })}
           </div>
         </section>
 
-        <section className="reveal rounded-3xl border border-white/15 bg-black/35 p-5 sm:p-6 lg:p-8">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-zinc-400">
-                Recent Results
-              </p>
-              <h2 className="mt-2 font-display text-3xl uppercase tracking-[0.07em] sm:text-4xl">
-                Last 5 Events
-              </h2>
-            </div>
-            <TransitionLink href="/on-track" className="cta-secondary">
-              Full Calendar
+        {/* Schedule */}
+        <section className="band mt-14" id="schedule">
+          <div className="band-head">
+            <h2 className="text-3xl">What&apos;s next</h2>
+            <TransitionLink href="/on-track" className="link-quiet text-sm">
+              Full calendar
             </TransitionLink>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {recentResults.map((event) => (
-              <article
-                key={`${event.date}-${event.title}`}
-                className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4"
-              >
-                <p className="text-[0.6rem] uppercase tracking-[0.22em] text-zinc-400">
-                  {scheduleDateFormatter.format(
-                    new Date(`${event.date}T00:00:00`),
-                  )}
-                </p>
-                <p className="mt-2 text-sm uppercase tracking-[0.14em] text-zinc-200">
-                  {event.track}
-                </p>
-                <p className="mt-2 text-xs uppercase tracking-[0.2em] text-zinc-400">
-                  {event.status === "Complete"
-                    ? event.result
-                    : event.status === "Testing"
-                      ? "Data Session"
-                      : "Result TBD"}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section
-          id="accomplishments"
-          className="rounded-3xl border border-white/15 bg-black/35 p-5 sm:p-6 lg:p-8"
-        >
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="reveal font-display text-4xl uppercase tracking-[0.07em] sm:text-5xl">
-              Driving Accomplishments
-            </h2>
-            <p className="reveal text-xs uppercase tracking-[0.22em] text-zinc-400">
-              Progression and performance milestones
+
+          {upcomingEvents.length === 0 ? (
+            <p className="lede mt-6">
+              The season is wrapped. Next year&apos;s calendar goes up as soon
+              as it&apos;s confirmed.
             </p>
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {drivingAccomplishments.map((entry, index) => (
-              <article
-                key={`${entry.season}-${entry.title}`}
-                className="reveal rounded-2xl border border-sky-200/20 bg-zinc-900/80 p-5"
-                style={{ animationDelay: `${130 + index * 85}ms` }}
-              >
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-sky-200/85">
-                  {entry.season}
-                </p>
-                <h3 className="mt-2 font-display text-2xl uppercase tracking-[0.06em]">
-                  {entry.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-300">
-                  {entry.detail}
-                </p>
-              </article>
-            ))}
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href="/partner-deck.pdf" className="cta-primary" download>
-              Partnership Deck
-            </a>
-            <a href="/media-kit.pdf" className="cta-secondary" download>
-              Media Kit
-            </a>
-            <a href="mailto:coaching@dylandana.com" className="cta-secondary">
-              Sponsor Inquiry
-            </a>
-          </div>
+          ) : (
+            <ul className="mt-6">
+              {upcomingEvents.map((event, index) => {
+                const isNext = index === 0;
+                return (
+                  <li
+                    key={`${event.team}-${event.date}`}
+                    className={`schedule-row${isNext ? " is-next" : ""}`}
+                  >
+                    <span className="meta w-16 shrink-0 text-amber-200/90 sm:w-20">
+                      {shortDate.format(asDate(event.date))}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-semibold text-zinc-100">
+                        {event.title}
+                      </span>
+                      <span className="block text-sm text-zinc-400">
+                        {event.track} · {teams[event.team].name} #{event.number}
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="tag tag-live">
+                        {event.carClass} class
+                      </span>
+                      {isNext ? (
+                        <span className="meta text-[0.72rem] text-amber-100">
+                          {nextCountdown}
+                        </span>
+                      ) : null}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
 
-        <section
-          id="partners"
-          className="reveal gold-outline rounded-3xl border border-sky-200/25 bg-gradient-to-r from-sky-500/12 via-black/40 to-transparent p-5 sm:p-6 lg:p-8"
-        >
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200/90">
-                Partnerships
-              </p>
-              <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.07em] sm:text-5xl">
-                Sponsor-Ready Program
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <a href="/partner-deck.pdf" className="cta-primary" download>
-                Partnership Deck
-              </a>
-              <a href="/media-kit.pdf" className="cta-secondary" download>
-                Media Kit
-              </a>
-            </div>
+        {/* Results */}
+        <section className="band mt-14" id="results">
+          <div className="band-head">
+            <h2 className="text-3xl">Recent results</h2>
+            <TransitionLink href="/on-track#results" className="link-quiet text-sm">
+              Every result since 2021
+            </TransitionLink>
           </div>
-          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-zinc-200 sm:text-base">
-            Open inventory for 2026 includes branded livery placement, in-car
-            content, and race-weekend hospitality. Replace the placeholders
-            below with sponsor logos or partners you are highlighting.
+
+          <table className="results-table mt-6 w-full border-collapse text-left">
+            <thead>
+              <tr>
+                <th className="eyebrow">Date</th>
+                <th className="eyebrow">Race</th>
+                <th className="eyebrow text-right">Overall</th>
+                <th className="eyebrow text-right">Class</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentResults.map((race) => (
+                <ResultRow key={`${race.team}-${race.date}`} race={race} />
+              ))}
+            </tbody>
+          </table>
+          <p className="meta mt-3">
+            Overall finishes from ChampCar; class finishes from the official
+            MyLaps Speedhive classifications.
           </p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-4">
-            {[
-              "Title Partner",
-              "Technical Partner",
-              "Support Partner",
-              "Community Partner",
-            ].map((label) => (
-              <div
-                key={label}
-                className="rounded-2xl border border-sky-200/20 bg-black/35 px-4 py-6 text-center text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-sky-100/80"
-              >
-                {label}
-              </div>
-            ))}
+        </section>
+
+        {/* Background */}
+        <section className="band mt-14" id="background">
+          <div className="band-head">
+            <h2 className="text-3xl">How I got here</h2>
           </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href="mailto:coaching@dylandana.com" className="cta-secondary">
-              Sponsor Inquiry
-            </a>
-            <TransitionLink href="/on-track" className="cta-secondary">
-              View Schedule
-            </TransitionLink>
+
+          <div className="mt-6 grid gap-8 sm:grid-cols-2 sm:gap-x-10">
+            {accomplishments.map((entry) => (
+              <article key={entry.title}>
+                <p className="meta text-amber-200/90">{entry.season}</p>
+                <h3 className="mt-1.5 text-xl">{entry.title}</h3>
+                <p className="lede mt-2 text-[0.95rem]">{entry.detail}</p>
+              </article>
+            ))}
           </div>
         </section>
 
-        <section
-          id="video-highlights"
-          className="rounded-3xl border border-white/15 bg-black/35 p-5 sm:p-6 lg:p-8"
-        >
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="reveal font-display text-4xl uppercase tracking-[0.07em] sm:text-5xl">
-              Video Highlights
-            </h2>
-            <p className="reveal text-xs uppercase tracking-[0.22em] text-amber-200/90">
-              Latest clips from Dylan&apos;s channel
-            </p>
+        {/* Sebring + 3D */}
+        <section className="band mt-14" id="sebring">
+          <div className="grid gap-10 lg:grid-cols-[1fr_0.95fr] lg:items-start">
+            <div>
+              <p className="eyebrow eyebrow-accent">Favourite track</p>
+              <h2 className="mt-3 text-4xl">Sebring</h2>
+              <p className="lede mt-5 max-w-xl">
+                Sebring is bumpy, hot, and completely unsentimental. The old
+                concrete will shake a setup apart over a long run, and the heat
+                does the same to the driver. That&apos;s exactly why I like it:
+                it&apos;s the most honest test of whether you can actually hold
+                a pace, or whether you were only ever quick for one lap.
+              </p>
+              <p className="lede mt-4 max-w-xl">
+                Turn 17 is the one everybody talks about. The corner that
+                decides your race is Turn 1, three hours earlier, when you
+                stopped being patient with the tires.
+              </p>
+            </div>
+
+            <div>
+              <p className="eyebrow">Lap visualiser</p>
+              <div className="mt-3">
+                <TrackModelPanel />
+              </div>
+            </div>
           </div>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {videoHighlights.map((video, index) => (
+          <figure className="m-0 mt-10">
+            <div className="relative h-[240px] overflow-hidden rounded-[4px] sm:h-[380px] lg:h-[460px]">
+              <Image
+                src={photos.sebringChase.src}
+                alt={photos.sebringChase.alt}
+                fill
+                sizes="(min-width: 1024px) 64rem, 100vw"
+                className="object-cover object-[55%_60%]"
+              />
+            </div>
+            <figcaption className="mt-3 text-[0.82rem] leading-relaxed text-zinc-500">
+              {photos.sebringChase.caption}{" "}
+              <TransitionLink href="/on-track#gallery" className="link-quiet">
+                More photos
+              </TransitionLink>
+            </figcaption>
+          </figure>
+        </section>
+
+        {/* Video */}
+        <section className="band mt-14" id="video">
+          <div className="band-head">
+            <h2 className="text-3xl">Video</h2>
+            <a
+              href="https://www.youtube.com/@DylanDana/videos"
+              target="_blank"
+              rel="noreferrer"
+              className="link-quiet text-sm"
+            >
+              Whole channel <span aria-hidden="true">↗</span>
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-3">
+            {videoHighlights.map((video) => (
               <a
                 key={video.title}
                 href={video.href}
                 target="_blank"
                 rel="noreferrer"
-                className="reveal overflow-hidden rounded-2xl border border-amber-200/20 bg-zinc-900/80 transition hover:border-amber-200/50 hover:bg-zinc-900"
-                style={{ animationDelay: `${130 + index * 90}ms` }}
+                className="video-card group"
               >
-                <div className="relative h-60">
+                <div className="relative h-52 overflow-hidden rounded-[4px]">
                   <Image
                     src={video.thumbnail}
-                    alt={`${video.title} preview image.`}
+                    alt=""
                     fill
                     sizes="(min-width: 768px) 33vw, 100vw"
-                    className={`object-cover ${video.position}`}
+                    className={`video-thumb object-cover ${video.position}`}
                   />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent" />
-                  <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-amber-200/60 bg-black/40 px-3 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-amber-100">
-                    Watch
-                  </div>
+                  <span className="video-play" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                      <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
+                    </svg>
+                  </span>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-display text-2xl uppercase tracking-[0.06em]">
-                    {video.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-zinc-300">
-                    {video.copy}
-                  </p>
-                </div>
+                <h3 className="mt-3 text-lg transition-colors group-hover:text-sky-200">
+                  {video.title}
+                  <span className="ext-arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                  <span className="sr-only"> (opens YouTube in a new tab)</span>
+                </h3>
+                <p className="mt-1 text-[0.92rem] leading-relaxed text-zinc-400">
+                  {video.copy}
+                </p>
               </a>
             ))}
           </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="https://www.youtube.com/@DylanDana/videos"
-              target="_blank"
-              rel="noreferrer"
-              className="cta-primary"
-            >
-              Watch Full Channel
-            </a>
-            <TransitionLink href="/on-track" className="cta-secondary">
-              View On Track
-            </TransitionLink>
-          </div>
         </section>
 
-        <section
-          id="sebring"
-          className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start"
-        >
-          <article className="reveal rounded-3xl border border-sky-300/35 bg-gradient-to-r from-sky-500/20 via-blue-400/10 to-transparent p-5 sm:p-6 lg:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.23em] text-sky-100/90">
-              Favorite Track
-            </p>
-            <h2 className="mt-3 max-w-2xl font-display text-4xl uppercase leading-[0.95] tracking-[0.06em] sm:text-5xl">
-              Sebring International Raceway
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-200 sm:text-base">
-              High-commitment corners, heavy braking zones, and rough surface
-              behavior make Sebring a strong benchmark for discipline and
-              consistency over long race runs.
-            </p>
-          </article>
-
-          <aside className="reveal rounded-3xl border border-white/15 bg-black/45 p-3 shadow-2xl backdrop-blur-sm">
-            <p className="mb-3 px-1 text-[0.62rem] font-semibold uppercase tracking-[0.28em] text-zinc-400">
-              3D Analytics // Driver Focus
-            </p>
-            <TrackModelPanel />
-            <div className="mt-4 space-y-2 px-1 pb-1">
-              <p className="text-[0.68rem] uppercase tracking-[0.18em] text-sky-200/90">
-                Interactive WebGL Analytics
+        {/* Coaching */}
+        <section className="band mt-14" id="coaching">
+          <div className="grid gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-start">
+            <div>
+              <p className="eyebrow eyebrow-accent">Coaching</p>
+              <h2 className="mt-3 text-4xl">
+                One-to-one, for drivers who are done guessing
+              </h2>
+              <p className="lede mt-5 max-w-xl">
+                Sessions are built around your data and your onboard, not a
+                generic curriculum. Most people arrive quick over one lap and
+                leave knowing how to do it forty times in a row.
               </p>
-              <p className="text-[0.68rem] uppercase tracking-[0.18em] text-zinc-300">
-                Race-car data measuring animation with live speed/load HUD
+              <p className="marker mt-5 max-w-xl text-[0.95rem] text-zinc-300">
+                {INSTRUCTOR_ROLE} — so the coaching comes from working with
+                drivers every week, not just from racing on weekends.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <a href={mailto("Coaching session")} className="cta-primary">
+                  Email about coaching
+                </a>
+                <TransitionLink href="/on-track" className="cta-secondary">
+                  See the season
+                </TransitionLink>
+              </div>
+              <p className="meta mt-4">
+                Or write directly to{" "}
+                <a href={mailto("Coaching session")} className="link-quiet">
+                  {CONTACT_EMAIL}
+                </a>
               </p>
             </div>
-          </aside>
-          <div className="reveal flex flex-wrap gap-3 lg:col-span-2">
-            <a href="mailto:coaching@dylandana.com" className="cta-primary">
-              Sponsor Inquiry
+
+            <ul className="marker space-y-3">
+              {coachingAreas.map((item) => (
+                <li key={item} className="text-[0.95rem] text-zinc-300">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Partnership */}
+        <section className="band mt-14" id="partners">
+          <div className="band-head">
+            <h2 className="text-3xl">Partnership</h2>
+            <p className="meta">2027 inventory open</p>
+          </div>
+
+          <p className="lede mt-5 max-w-2xl">
+            There&apos;s space available for next season — livery, in-car camera
+            time, and hospitality on race weekends. Ask for the deck and
+            you&apos;ll get the reach numbers and the pricing — exactly where
+            your logo goes and what it costs.
+          </p>
+
+          <dl className="mt-7 max-w-xl">
+            {partnerPackages.map((pkg) => (
+              <div key={pkg.tier} className="spec">
+                <dt className="text-zinc-300">{pkg.tier}</dt>
+                <dd className="text-sm font-normal text-zinc-400">
+                  {pkg.detail}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-7 flex flex-wrap gap-3">
+            {/* The PDFs aren't hosted yet, so these request them by email
+                rather than pointing at downloads that 404. */}
+            <a href={mailto("2027 partnership deck")} className="cta-primary">
+              Request the partnership deck
             </a>
-            <a href="#contact" className="cta-secondary">
-              Book Coaching
+            <a href={mailto("Media kit request")} className="cta-secondary">
+              Request the media kit
             </a>
           </div>
         </section>
 
-        <section
-          id="contact"
-          className="reveal rounded-3xl border border-white/15 bg-zinc-900/75 p-5 sm:p-6 lg:p-8"
-        >
-          <p className="text-xs font-semibold uppercase tracking-[0.23em] text-sky-100/90">
-            Driver Coaching
-          </p>
-          <h2 className="mt-3 max-w-3xl font-display text-4xl uppercase leading-[0.95] tracking-[0.06em] sm:text-5xl">
-            Book Dylan Dana For 1:1 Driver Coaching
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-200 sm:text-base">
-            Coaching sessions are designed for developing drivers who want
-            cleaner laps, stronger racecraft decisions, and better race-weekend
-            preparation.
-          </p>
+        {/* Footer */}
+        <footer className="band gold-rule mt-16">
+          <div className="flex flex-wrap items-start justify-between gap-8">
+            <div>
+              <p className="eyebrow">Elsewhere</p>
+              <ul className="mt-3 space-y-1.5">
+                {socialLinks.map((item) => (
+                  <li key={item.label}>
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="link-quiet text-sm"
+                    >
+                      {item.label} — {item.handle}
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="link-quiet text-sm">
+                    Email — {CONTACT_EMAIL}
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-          <div className="mt-6 grid gap-2 sm:grid-cols-2">
-            {coachingAreas.map((item, index) => (
-              <p
-                key={item}
-                className="reveal rounded-xl border border-sky-200/20 bg-zinc-800/50 px-3 py-2 text-xs uppercase tracking-[0.16em] text-sky-100/90"
-                style={{ animationDelay: `${160 + index * 70}ms` }}
-              >
-                {item}
+            <div className="text-right">
+              <p className="text-sm text-zinc-400">
+                Always bringing the fight.
               </p>
-            ))}
+              <p className="mt-2 text-[0.8rem] text-zinc-600">
+                Built by{" "}
+                <a
+                  href="https://www.linkedin.com/in/dezsokovi/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-zinc-500 transition-colors hover:text-amber-200"
+                >
+                  Dezso Kovi
+                </a>
+                .
+              </p>
+            </div>
           </div>
-
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a href="mailto:coaching@dylandana.com" className="cta-primary">
-              Email Coaching
-            </a>
-            <TransitionLink href="/on-track" className="cta-secondary">
-              Explore On Track
-            </TransitionLink>
-          </div>
-        </section>
-
-        <footer className="reveal rounded-3xl border border-white/15 bg-black/45 px-5 py-6">
-          <p className="text-[0.62rem] uppercase tracking-[0.22em] text-zinc-400">
-            What&apos;s Up On Socials
-          </p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            {socialLinks.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-2xl border border-sky-200/35 bg-zinc-900/70 px-4 py-3 transition hover:bg-sky-400/15"
-              >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-100">
-                  {item.label}
-                </p>
-                <p className="mt-1 text-[0.66rem] uppercase tracking-[0.14em] text-zinc-300">
-                  {item.handle}
-                </p>
-              </a>
-            ))}
-          </div>
-          <p className="mt-3 text-[0.62rem] uppercase tracking-[0.16em] text-zinc-500">
-            Social links are live and ready for followers.
-          </p>
-          <p className="mt-5 text-xs uppercase tracking-[0.2em] text-zinc-500">
-            Dylan Dana // Always bringing the fight.
-          </p>
-          <p className="mt-2 text-[0.62rem] uppercase tracking-[0.18em] text-zinc-500">
-            Built by{" "}
-            <a
-              href="https://www.linkedin.com/in/dezsokovi/"
-              target="_blank"
-              rel="noreferrer"
-              className="text-zinc-200 transition hover:text-amber-200"
-            >
-              Dezso Kovi
-            </a>
-            .
-          </p>
         </footer>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

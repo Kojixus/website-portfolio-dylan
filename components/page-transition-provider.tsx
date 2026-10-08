@@ -10,125 +10,75 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
-type TransitionContextValue = {
-  navigate: (href: string) => void;
-  isTransitioning: boolean;
+type PageTransitionValue = {
+  isNavigating: boolean;
+  startTransition: () => void;
 };
 
-const TransitionContext = createContext<TransitionContextValue | null>(null);
+const PageTransitionContext = createContext<PageTransitionValue>({
+  isNavigating: false,
+  startTransition: () => {},
+});
 
 export function usePageTransition() {
-  const context = useContext(TransitionContext);
-  if (!context) {
-    throw new Error("usePageTransition must be used within PageTransitionProvider");
-  }
-  return context;
+  return useContext(PageTransitionContext);
 }
 
-type PageTransitionProviderProps = {
-  children: ReactNode;
-};
-
-const NAVIGATE_DELAY_MS = 420;
-const SETTLE_DELAY_MS = 680;
+/** Safety valve: if a navigation is cancelled the loader must not stick. */
+const MAX_LOADER_MS = 6000;
 
 export default function PageTransitionProvider({
   children,
-}: PageTransitionProviderProps) {
-  const router = useRouter();
+}: {
+  children: ReactNode;
+}) {
   const pathname = usePathname();
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const pushTimeoutRef = useRef<number | null>(null);
-  const settleTimeoutRef = useRef<number | null>(null);
+  // The path we were on when the navigation started. Once the route changes
+  // it no longer matches, so the loader hides itself without an effect.
+  const [startedFrom, setStartedFrom] = useState<string | null>(null);
+  const isNavigating = startedFrom !== null && startedFrom === pathname;
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clearTimeouts = useCallback(() => {
-    if (pushTimeoutRef.current !== null) {
-      window.clearTimeout(pushTimeoutRef.current);
-      pushTimeoutRef.current = null;
-    }
-    if (settleTimeoutRef.current !== null) {
-      window.clearTimeout(settleTimeoutRef.current);
-      settleTimeoutRef.current = null;
+  const clearTimer = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
   }, []);
 
-  const navigate = useCallback(
-    (href: string) => {
-      if (!href.startsWith("/")) {
-        return;
-      }
+  // The new route has rendered, so the safety timer is no longer needed.
+  useEffect(() => clearTimer, [pathname, clearTimer]);
 
-      if (href === pathname) {
-        return;
-      }
-
-      clearTimeouts();
-      setIsTransitioning(true);
-
-      pushTimeoutRef.current = window.setTimeout(() => {
-        router.push(href);
-      }, NAVIGATE_DELAY_MS);
-    },
-    [clearTimeouts, pathname, router]
-  );
-
-  useEffect(() => {
-    if (!isTransitioning) {
-      return;
-    }
-
-    if (settleTimeoutRef.current !== null) {
-      window.clearTimeout(settleTimeoutRef.current);
-    }
-
-    settleTimeoutRef.current = window.setTimeout(() => {
-      setIsTransitioning(false);
-      settleTimeoutRef.current = null;
-    }, SETTLE_DELAY_MS);
-
-    return () => {
-      if (settleTimeoutRef.current !== null) {
-        window.clearTimeout(settleTimeoutRef.current);
-        settleTimeoutRef.current = null;
-      }
-    };
-  }, [isTransitioning, pathname]);
-
-  useEffect(() => {
-    return () => {
-      clearTimeouts();
-    };
-  }, [clearTimeouts]);
+  const startTransition = useCallback(() => {
+    setStartedFrom(pathname);
+    clearTimer();
+    timeoutRef.current = setTimeout(() => setStartedFrom(null), MAX_LOADER_MS);
+  }, [clearTimer, pathname]);
 
   const value = useMemo(
-    () => ({
-      navigate,
-      isTransitioning,
-    }),
-    [navigate, isTransitioning]
+    () => ({ isNavigating, startTransition }),
+    [isNavigating, startTransition],
   );
 
   return (
-    <TransitionContext.Provider value={value}>
+    <PageTransitionContext.Provider value={value}>
       {children}
-
       <div
-        aria-hidden="true"
-        className={`route-loader${isTransitioning ? " is-active" : ""}`}
+        className={`route-loader${isNavigating ? " is-active" : ""}`}
+        role="status"
+        aria-live="polite"
+        aria-hidden={!isNavigating}
       >
         <div className="route-loader-panel">
           <p className="route-loader-kicker">Dylan Dana</p>
-          <p className="route-loader-title">Loading Next Section</p>
+          <p className="route-loader-title">Loading</p>
           <div className="route-loader-bars">
-            <span />
-            <span />
-            <span />
             <span />
           </div>
         </div>
       </div>
-    </TransitionContext.Provider>
+    </PageTransitionContext.Provider>
   );
 }
